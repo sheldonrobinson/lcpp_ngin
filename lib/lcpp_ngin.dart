@@ -21,6 +21,6 @@ import 'src/bindings.dart';
 export 'src/bindings.dart';
 
 part 'src/llama_exception.dart';
-part 'src/llamacpp.dart';
+part 'src/lcpp_ngin.dart';
 part 'src/params/context_params.dart';
 part 'src/params/lcpp_params.dart';

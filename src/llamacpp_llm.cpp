@@ -82,40 +82,43 @@ static LppChatMessageCallback ChatMessageCallback = nullptr;
 
 static common_chat_templates_ptr _chat_templates;
 
-// static common_chat_syntax_ptr _chat_syntax;
+//typedef struct common_init_result_deleter {
+//	void operator()(common_init_result_t* cmResult) {
+//		if (cmResult != nullptr) {
+//			if (cmResult->context() != nullptr) {
+//				llama_free(cmResult->context());
+//				cmResult->free_context();
+//			}
+//			if (cmResult->model() != nullptr) {
+//				llama_model_free(cmResult->model());
+//			}
+//			auto lora_vector = (*cmResult).lora();
+//			for(llama_adapter_lora_ptr& lora_ptr : lora_vector) {
+//				if (lora_ptr != nullptr) {
+//					lora_ptr.reset();
+//				}
+//			}
+//			lora_vector.clear();
+//			free(cmResult);
+//		}
+//	}
+//} common_init_result_deleter_t;
 
-
-typedef struct common_init_result_deleter {
-	void operator()(common_init_result_t* cmResult) {
-		if (cmResult != nullptr) {
-			if ((*cmResult).context != nullptr) { (*cmResult).context.reset(); }
-			if ((*cmResult).model != nullptr) { (*cmResult).model.reset(); }
-			for(llama_adapter_lora_ptr& lora_ptr : (*cmResult).lora) {
-				if (lora_ptr != nullptr) {
-					lora_ptr.reset();
-				}
-			}
-			(*cmResult).lora.clear();
-			free(cmResult);
-		}
-	}
-} common_init_result_deleter_t;
-
-typedef std::unique_ptr < common_init_result_t, common_init_result_deleter_t> common_init_result_ptr;
+// typedef std::unique_ptr < common_init_result_t, common_init_result_deleter_t> common_init_result_ptr;
 
 static common_init_result_ptr _common;
 
-typedef struct common_sampler_deleter {
-	void operator()(common_sampler_t* gsmpl) {
-		if (gsmpl != nullptr) {
-			// reset internal pointers to avoid double free
-			common_sampler_free(gsmpl);
-		}
-		
-	}
-} common_sampler_deleter_t;
+//typedef struct common_sampler_deleter {
+//	void operator()(common_sampler_t* gsmpl) {
+//		if (gsmpl != nullptr) {
+//			// reset internal pointers to avoid double free
+//			common_sampler_free(gsmpl);
+//		}
+//		
+//	}
+//} common_sampler_deleter_t;
 
-typedef std::unique_ptr<common_sampler_t, common_sampler_deleter_t> common_sampler_ptr;
+// typedef std::unique_ptr<common_sampler_t, common_sampler_deleter_t> common_sampler_ptr;
 
 void lcpp_free_common_chat_msg(lcpp_common_chat_msg_t* msg) {
 	if (msg != nullptr) {
@@ -760,9 +763,9 @@ int _prompt(lcpp_prompt_args_t prompt_args) {
 		iLLAMACPP_continue.store(lcpp_finish_reason::LCPP_FINISH_REASON_STOP);
 		std::string response;
 
-		auto _vocab = llama_model_get_vocab(prompt_args.common->model.get());
+		auto _vocab = llama_model_get_vocab(prompt_args.common->model());
 
-		auto _ctx = prompt_args.common->context.get();
+		llama_context* _ctx = prompt_args.common->context();
 
 		bool is_first = llama_memory_seq_pos_max(llama_get_memory(_ctx), 0) == -1;
 
@@ -1020,7 +1023,7 @@ int lcpp_prompt(const lcpp_sampling_params_t sampling_params, lcpp_common_chat_m
 	lcpp_reset();
 	
 	args.common = _common.get();
-	args.sampler = common_sampler_init((*_common).model.get(), _lcpp_params_sampling(sampling_params));
+	args.sampler = common_sampler_init((*_common).model(), _lcpp_params_sampling(sampling_params));
 	std::thread thr(_prompt, args);
 
 	thr.detach();
@@ -1030,8 +1033,8 @@ int lcpp_prompt(const lcpp_sampling_params_t sampling_params, lcpp_common_chat_m
 
 int _conf(common_params_t cmParams) {
 
-	std::unique_ptr<common_init_result_t, std::default_delete< common_init_result_t>> llama_init = std::make_unique<common_init_result_t>(common_init_from_params(cmParams));
-	if ((*llama_init).model == nullptr || (*llama_init).context == nullptr) {
+	common_init_result_ptr llama_init = common_init_from_params(cmParams);
+	if ((*llama_init).model() == nullptr || (*llama_init).context() == nullptr) {
 		if (OnCancelCallback != nullptr) {
 			OnCancelCallback(lcpp_finish_reason::LCPP_FINISH_REASON_FATAL_ERROR);
 		}
@@ -1041,7 +1044,7 @@ int _conf(common_params_t cmParams) {
 	
 	_common.reset(llama_init.release());
 
-	llama_set_abort_callback((*_common).context.get(), _ggml_abort_callback, &bLLAMACPP_abort);
+	llama_set_abort_callback((*_common).context(), _ggml_abort_callback, &bLLAMACPP_abort);
 
 	ggml_backend_dev_t cpu_dev = ggml_backend_dev_by_type(GGML_BACKEND_DEVICE_TYPE_CPU);
 
@@ -1069,12 +1072,12 @@ int _conf(common_params_t cmParams) {
 		ggml_threadpool_t threadpool = ggml_threadpool_new_fn(&tpp);
 
 		if (threadpool) {
-			llama_attach_threadpool((*_common).context.get(), threadpool, threadpool_batch);
+			llama_attach_threadpool((*_common).context(), threadpool, threadpool_batch);
 		}
 		set_process_priority(cmParams.cpuparams.priority);
 	}
 
-	_chat_templates.reset(common_chat_templates_init((*_common).model.get(), cmParams.chat_template).release());
+	_chat_templates.reset(common_chat_templates_init((*_common).model(), cmParams.chat_template).release());
 
 	if (OnCancelCallback != nullptr) {
 		OnCancelCallback(0);
@@ -1086,8 +1089,8 @@ int _conf(common_params_t cmParams) {
 }
 
 void lcpp_reset() {
-	if (_common != nullptr && _common->context != nullptr) {
-		llama_memory_clear(llama_get_memory((*_common).context.get()), true);
+	if (_common != nullptr && _common->context() != nullptr) {
+		llama_memory_clear(llama_get_memory((*_common).context()), true);
 	}
 	(*bLLAMACPP_abort).store(false);
 	(*bLLAMACPP_cancel).store(false);
@@ -1096,8 +1099,8 @@ void lcpp_reset() {
 
 void lcpp_unload() {
 	lcpp_reset();
-	if (_common != nullptr && _common->context != nullptr) {
-		llama_detach_threadpool((*_common).context.get());
+	if (_common != nullptr && _common->context() != nullptr) {
+		llama_detach_threadpool((*_common).context());
 	}
 
 	_chat_templates.reset();
@@ -1240,7 +1243,7 @@ void lcpp_reconfigure(const llama_context_params_t context_params, const lcpp_pa
 int32_t lcpp_tokenize(const char* text, int n_text, bool add_special,
 	bool parse_special, llama_token** tokens) {
 	std::string _text(text);
-	llama_tokens llama_tokens = common_tokenize((*_common).context.get(), _text, add_special, parse_special);
+	llama_tokens llama_tokens = common_tokenize((*_common).context(), _text, add_special, parse_special);
 
 	if (!llama_tokens.empty()) {
 		int n = llama_tokens.size();

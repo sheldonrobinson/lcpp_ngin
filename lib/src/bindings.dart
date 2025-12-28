@@ -5222,6 +5222,26 @@ external ffi.Pointer<ggml_tensor> ggml_pad(
   int p3,
 );
 
+/// pad each dimension with values on the other side of the torus (looping around)
+@ffi.Native<
+  ffi.Pointer<ggml_tensor> Function(
+    ffi.Pointer<ggml_context>,
+    ffi.Pointer<ggml_tensor>,
+    ffi.Int,
+    ffi.Int,
+    ffi.Int,
+    ffi.Int,
+  )
+>()
+external ffi.Pointer<ggml_tensor> ggml_pad_circular(
+  ffi.Pointer<ggml_context> ctx,
+  ffi.Pointer<ggml_tensor> a,
+  int p0,
+  int p1,
+  int p2,
+  int p3,
+);
+
 @ffi.Native<
   ffi.Pointer<ggml_tensor> Function(
     ffi.Pointer<ggml_context>,
@@ -5237,6 +5257,34 @@ external ffi.Pointer<ggml_tensor> ggml_pad(
   )
 >()
 external ffi.Pointer<ggml_tensor> ggml_pad_ext(
+  ffi.Pointer<ggml_context> ctx,
+  ffi.Pointer<ggml_tensor> a,
+  int lp0,
+  int rp0,
+  int lp1,
+  int rp1,
+  int lp2,
+  int rp2,
+  int lp3,
+  int rp3,
+);
+
+/// pad each dimension with values on the other side of the torus (looping around)
+@ffi.Native<
+  ffi.Pointer<ggml_tensor> Function(
+    ffi.Pointer<ggml_context>,
+    ffi.Pointer<ggml_tensor>,
+    ffi.Int,
+    ffi.Int,
+    ffi.Int,
+    ffi.Int,
+    ffi.Int,
+    ffi.Int,
+    ffi.Int,
+    ffi.Int,
+  )
+>()
+external ffi.Pointer<ggml_tensor> ggml_pad_ext_circular(
   ffi.Pointer<ggml_context> ctx,
   ffi.Pointer<ggml_tensor> a,
   int lp0,
@@ -5423,11 +5471,11 @@ external ffi.Pointer<ggml_tensor> ggml_arange(
   double step,
 );
 
-/// q:    [n_embd_k, n_batch,     n_head,    ne3 ]
-/// k:    [n_embd_k, n_kv,        n_head_kv, ne3 ]
-/// v:    [n_embd_v, n_kv,        n_head_kv, ne3 ] !! not transposed !!
-/// mask: [n_kv,     n_batch_pad, ne32,      ne33] !! n_batch_pad = GGML_PAD(n_batch, GGML_KQ_MASK_PAD) !!
-/// res:  [n_embd_v, n_head,      n_batch,   ne3 ] !! permuted !!
+/// q:    [n_embd_k, n_batch, n_head,    ne3 ]
+/// k:    [n_embd_k, n_kv,    n_head_kv, ne3 ]
+/// v:    [n_embd_v, n_kv,    n_head_kv, ne3 ] !! not transposed !!
+/// mask: [n_kv,     n_batch, ne32,      ne33]
+/// res:  [n_embd_v, n_head,  n_batch,   ne3 ] !! permuted !!
 ///
 /// broadcast:
 /// n_head % n_head_kv == 0
@@ -6205,6 +6253,17 @@ external void ggml_graph_dump_dot(
 
 /// Set callback for all future logging events.
 /// If this is not called, or NULL is supplied, everything is output on stderr.
+@ffi.Native<
+  ffi.Void Function(
+    ffi.Pointer<ggml_log_callback>,
+    ffi.Pointer<ffi.Pointer<ffi.Void>>,
+  )
+>()
+external void ggml_log_get(
+  ffi.Pointer<ggml_log_callback> log_callback,
+  ffi.Pointer<ffi.Pointer<ffi.Void>> user_data,
+);
+
 @ffi.Native<ffi.Void Function(ggml_log_callback, ffi.Pointer<ffi.Void>)>()
 external void ggml_log_set(
   ggml_log_callback log_callback,
@@ -6372,10 +6431,28 @@ external void ggml_gallocr_free(
 /// call with a worst-case graph to avoid buffer reallocations
 /// not strictly required for single buffer usage: ggml_gallocr_alloc_graph will reallocate the buffers automatically if needed
 /// returns false if the buffer allocation failed
+/// ggml_gallocr_resrve_n_size writes the buffer sizes per galloc buffer that would be allocated by ggml_gallocr_reserve_n to sizes
 @ffi.Native<ffi.Bool Function(ggml_gallocr_t, ffi.Pointer<ggml_cgraph>)>()
 external bool ggml_gallocr_reserve(
   ggml_gallocr_t galloc,
   ffi.Pointer<ggml_cgraph> graph,
+);
+
+@ffi.Native<
+  ffi.Void Function(
+    ggml_gallocr_t,
+    ffi.Pointer<ggml_cgraph>,
+    ffi.Pointer<ffi.Int>,
+    ffi.Pointer<ffi.Int>,
+    ffi.Pointer<ffi.Size>,
+  )
+>()
+external void ggml_gallocr_reserve_n_size(
+  ggml_gallocr_t galloc,
+  ffi.Pointer<ggml_cgraph> graph,
+  ffi.Pointer<ffi.Int> node_buffer_ids,
+  ffi.Pointer<ffi.Int> leaf_buffer_ids,
+  ffi.Pointer<ffi.Size> sizes,
 );
 
 @ffi.Native<
@@ -6409,6 +6486,15 @@ external int ggml_gallocr_get_buffer_size(
 
 /// Utils
 /// Create a buffer and allocate all the tensors in a ggml_context
+/// ggml_backend_alloc_ctx_tensors_from_buft_size returns the size of the buffer that would be allocated by ggml_backend_alloc_ctx_tensors_from_buft
+@ffi.Native<
+  ffi.Size Function(ffi.Pointer<ggml_context>, ggml_backend_buffer_type_t)
+>()
+external int ggml_backend_alloc_ctx_tensors_from_buft_size(
+  ffi.Pointer<ggml_context> ctx,
+  ggml_backend_buffer_type_t buft,
+);
+
 @ffi.Native<
   ffi.Pointer<ggml_backend_buffer> Function(
     ffi.Pointer<ggml_context>,
@@ -7104,6 +7190,19 @@ external void ggml_backend_sched_free(
 );
 
 /// Initialize backend buffers from a measure graph
+@ffi.Native<
+  ffi.Void Function(
+    ggml_backend_sched_t,
+    ffi.Pointer<ggml_cgraph>,
+    ffi.Pointer<ffi.Size>,
+  )
+>()
+external void ggml_backend_sched_reserve_size(
+  ggml_backend_sched_t sched,
+  ffi.Pointer<ggml_cgraph> measure_graph,
+  ffi.Pointer<ffi.Size> sizes,
+);
+
 @ffi.Native<ffi.Bool Function(ggml_backend_sched_t, ffi.Pointer<ggml_cgraph>)>()
 external bool ggml_backend_sched_reserve(
   ggml_backend_sched_t sched,
@@ -7624,6 +7723,9 @@ external int ggml_cpu_has_sme();
 /// other
 @ffi.Native<ffi.Int Function()>()
 external int ggml_cpu_has_riscv_v();
+
+@ffi.Native<ffi.Int Function()>()
+external int ggml_cpu_get_rvv_vlen();
 
 @ffi.Native<ffi.Int Function()>()
 external int ggml_cpu_has_vsx();
@@ -8303,6 +8405,52 @@ external void llama_free(
   ffi.Pointer<llama_context> ctx,
 );
 
+/// fits mparams and cparams to free device memory (assumes system memory is unlimited)
+/// returns true if the parameters could be successfully modified to fit device memory
+/// this function is NOT thread safe because it modifies the global llama logger state
+@ffi.Native<
+  ffi.Bool Function(
+    ffi.Pointer<ffi.Char>,
+    ffi.Pointer<llama_model_params>,
+    ffi.Pointer<llama_context_params>,
+    ffi.Pointer<ffi.Float>,
+    ffi.Pointer<llama_model_tensor_buft_override>,
+    ffi.Size,
+    ffi.Uint32,
+    ffi.UnsignedInt,
+  )
+>(symbol: 'llama_params_fit')
+external bool _llama_params_fit(
+  ffi.Pointer<ffi.Char> path_model,
+  ffi.Pointer<llama_model_params> mparams,
+  ffi.Pointer<llama_context_params> cparams,
+  ffi.Pointer<ffi.Float> tensor_split,
+  ffi.Pointer<llama_model_tensor_buft_override> tensor_buft_overrides,
+  int margin,
+  int n_ctx_min,
+  int log_level,
+);
+
+bool llama_params_fit(
+  ffi.Pointer<ffi.Char> path_model,
+  ffi.Pointer<llama_model_params> mparams,
+  ffi.Pointer<llama_context_params> cparams,
+  ffi.Pointer<ffi.Float> tensor_split,
+  ffi.Pointer<llama_model_tensor_buft_override> tensor_buft_overrides,
+  int margin,
+  int n_ctx_min,
+  ggml_log_level log_level,
+) => _llama_params_fit(
+  path_model,
+  mparams,
+  cparams,
+  tensor_split,
+  tensor_buft_overrides,
+  margin,
+  n_ctx_min,
+  log_level.value,
+);
+
 @ffi.Native<ffi.Int64 Function()>()
 external int llama_time_us();
 
@@ -8311,6 +8459,9 @@ external int llama_max_devices();
 
 @ffi.Native<ffi.Size Function()>()
 external int llama_max_parallel_sequences();
+
+@ffi.Native<ffi.Size Function()>()
+external int llama_max_tensor_buft_overrides();
 
 @ffi.Native<ffi.Bool Function()>()
 external bool llama_supports_mmap();
@@ -10132,6 +10283,18 @@ external ffi.Pointer<ffi.Char> llama_print_system_info();
 
 /// Set callback for all future logging events.
 /// If this is not called, or NULL is supplied, everything is output on stderr.
+/// The logger state is global so these functions are NOT thread safe.
+@ffi.Native<
+  ffi.Void Function(
+    ffi.Pointer<ggml_log_callback>,
+    ffi.Pointer<ffi.Pointer<ffi.Void>>,
+  )
+>()
+external void llama_log_get(
+  ffi.Pointer<ggml_log_callback> log_callback,
+  ffi.Pointer<ffi.Pointer<ffi.Void>> user_data,
+);
+
 @ffi.Native<ffi.Void Function(ggml_log_callback, ffi.Pointer<ffi.Void>)>()
 external void llama_log_set(
   ggml_log_callback log_callback,
@@ -11732,13 +11895,15 @@ enum ggml_scale_mode {
 }
 
 enum ggml_scale_flag {
-  GGML_SCALE_FLAG_ALIGN_CORNERS(256);
+  GGML_SCALE_FLAG_ALIGN_CORNERS(256),
+  GGML_SCALE_FLAG_ANTIALIAS(512);
 
   final int value;
   const ggml_scale_flag(this.value);
 
   static ggml_scale_flag fromValue(int value) => switch (value) {
     256 => GGML_SCALE_FLAG_ALIGN_CORNERS,
+    512 => GGML_SCALE_FLAG_ANTIALIAS,
     _ => throw ArgumentError('Unknown value for ggml_scale_flag: $value'),
   };
 }
@@ -13203,6 +13368,10 @@ final class llama_model_params extends ffi.Struct {
   /// bypass host buffer allowing extra buffers to be used
   @ffi.Bool()
   external bool no_host;
+
+  /// only load metadata and simulate memory allocations
+  @ffi.Bool()
+  external bool no_alloc;
 }
 
 /// NOTE: changing the default values of parameters marked as [EXPERIMENTAL] may cause crashes or incorrect results in certain configurations
@@ -14644,6 +14813,8 @@ const int false$ = 0;
 
 const int true$ = 1;
 
+const int _WIN32_WINNT = 2560;
+
 const int _ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE = 1;
 
 const int _CRT_BUILD_DESKTOP_APP = 1;
@@ -14791,8 +14962,6 @@ const int GGML_ROPE_TYPE_VISION = 24;
 const int GGML_ROPE_TYPE_IMROPE = 40;
 
 const int GGML_MROPE_SECTIONS = 4;
-
-const int GGML_KQ_MASK_PAD = 64;
 
 const int GGML_N_TASKS_MAX = -1;
 
