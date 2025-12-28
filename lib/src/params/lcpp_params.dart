@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-part of 'package:llamacpp_ngin/llamacpp_ngin.dart';
+part of 'package:lcpp_ngin/lcpp_ngin.dart';
 
 typedef ReasoningFamily = ({bool reasoning, int family});
 

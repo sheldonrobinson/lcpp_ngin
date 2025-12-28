@@ -6,7 +6,7 @@ cmake_policy(SET CMP0168 OLD)
 cmake_policy(SET CMP0169 OLD)
 
 # Project-level configuration.
-set(PROJECT_NAME "llamacpp_ngin")
+set(PROJECT_NAME "lcpp_ngin")
 project(${PROJECT_NAME} LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
@@ -101,18 +101,14 @@ set(GGML_HIP OFF CACHE BOOL "ggml: use HIP" FORCE)
 set(GGML_HIP_MMQ_MFMA ON CACHE BOOL "ggml: enable MFMA MMA for CDNA in MMQ" FORCE)
 set(GGML_OPENMP ON CACHE BOOL "ggml: use OpenMP" FORCE)
 set(GGML_CPU_KLEIDIAI  ON CACHE BOOL "ggml: use KleidiAI optimized kernels if applicable" FORCE)
-# if ( (CMAKE_CXX_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64") OR  (CMAKE_CXX_COMPILER_ARCHITECTURE_ID STREQUAL "arm64") )
-	# set(GGML_OPENCL_USE_ADRENO_KERNELS ON CACHE BOOL "ggml: use optimized kernels for Adreno" FORCE)
-# else()
-	# set(GGML_OPENCL_USE_ADRENO_KERNELS OFF CACHE BOOL "ggml: use optimized kernels for Adreno" FORCE)
-# endif()
+
 
 FetchContent_MakeAvailable(llama_cpp)
 
 add_subdirectory("${LLAMACPP_SRC_DIR}" "${CMAKE_BINARY_DIR}/shared")
 
-set(llamacpp_ngin_bundled_libraries
-	$<TARGET_FILE:llamacpp_ngin>
+set(lcpp_ngin_bundled_libraries
+	$<TARGET_FILE:lcpp_ngin>
 	$<TARGET_FILE:llama>
 	$<TARGET_FILE:llguidance>
 	$<TARGET_FILE:ggml-cuda>

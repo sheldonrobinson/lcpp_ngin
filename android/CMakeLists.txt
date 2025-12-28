@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 # Project-level configuration.
-set(PROJECT_NAME "llamacpp_ngin")
+set(PROJECT_NAME "lcpp_ngin")
 project(${PROJECT_NAME} LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -226,6 +226,8 @@ set(GGML_BLAS          OFF CACHE BOOL "ggml: use BLAS" FORCE)
 set(GGML_LLAMAFILE     OFF CACHE BOOL "ggml: use LLAMAFILE" FORCE)
 set(GGML_KOMPUTE       OFF CACHE BOOL "ggml: use Kompute" FORCE)
 set(GGML_CUDA          OFF CACHE BOOL "ggml: use CUDA" FORCE)
+set(GGML_OPENCL_USE_ADRENO_KERNELS ON CACHE BOOL "ggml: use optimized kernels for Adreno" FORCE)
+
 
 FetchContent_MakeAvailable(llama_cpp)
 
@@ -233,8 +235,8 @@ add_dependencies(ggml-vulkan Vulkan::Headers)
 
 add_subdirectory("${LLAMACPP_SRC_DIR}" "${CMAKE_BINARY_DIR}/shared")
 
-set(llamacpp_bundled_libraries
-  $<TARGET_FILE:llamacpp>
+set(lcpp_ngin_bundled_libraries
+  $<TARGET_FILE:lcpp_ngin>
   $<TARGET_FILE:llama>
   $<TARGET_FILE:ggml-vulkan>
   $<TARGET_FILE:ggml-cpu>

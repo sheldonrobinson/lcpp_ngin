@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 # Project-level configuration.
-set(PROJECT_NAME "llamacpp_ngin")
+set(PROJECT_NAME "lcpp_ngin")
 project(${PROJECT_NAME} LANGUAGES CXX C)
 
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -830,8 +830,8 @@ add_dependencies(common llguidance)
 add_subdirectory("${LLAMACPP_SRC_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/shared")
 
 				   
-set(llamacpp_ngin_bundled_libraries
-	$<TARGET_FILE:llamacpp_ngin>
+set(lcpp_ngin_bundled_libraries
+	$<TARGET_FILE:lcpp_ngin>
 	$<TARGET_FILE:llama>
 	$<TARGET_FILE:llguidance>
 	$<TARGET_FILE:ggml-cuda>

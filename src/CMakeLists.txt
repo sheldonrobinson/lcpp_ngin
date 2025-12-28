@@ -3,7 +3,7 @@
 # the plugin to fail to compile for some customers of the plugin.
 cmake_minimum_required(VERSION 3.10)
 
-project(llamacpp_ngin VERSION 1.0.0 LANGUAGES CXX)
+project(lcpp_ngin VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 11)
@@ -23,35 +23,35 @@ find_package(OpenMP REQUIRED)
 
 set(LLAMACPP_SRCS llamacpp_llm.cpp llamacpp_utils.cpp)
 
-add_library(llamacpp_ngin SHARED ${LLAMACPP_SRCS})
+add_library(lcpp_ngin SHARED ${LLAMACPP_SRCS})
 
 # add_dependencies(llamacpp infoware_prj-build ggml_prj-build llama_cpp_prj-build)
 
-target_include_directories(llamacpp_ngin PRIVATE
+target_include_directories(lcpp_ngin PRIVATE
 	$<BUILD_INTERFACE:${LLAMA_CPP_SOURCE_DIR}/src>)
 
-set_target_properties(llamacpp_ngin PROPERTIES
+set_target_properties(lcpp_ngin PROPERTIES
   BUILD_WITH_INSTALL_RPATH TRUE
   LINKER_LANGUAGE CXX
   PUBLIC_HEADER llamacpp.h
-  OUTPUT_NAME "llamacpp_ngin"
+  OUTPUT_NAME "lcpp_ngin"
   POSITION_INDEPENDENT_CODE ON
 )
 
 if(MSVC)
-	set_property(TARGET llamacpp_ngin PROPERTY
+	set_property(TARGET lcpp_ngin PROPERTY
 		MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 endif()
 
-target_compile_definitions(llamacpp_ngin PUBLIC DART_SHARED_LIB)
+target_compile_definitions(lcpp_ngin PUBLIC DART_SHARED_LIB)
 
 if(ANDROID)
-    target_link_libraries(llamacpp_ngin PRIVATE log cpuinfo infoware nlohmann::json llama common ggml ggml-base llguidance Threads::Threads) # ggml-cpu 
+    target_link_libraries(lcpp_ngin PRIVATE log cpuinfo infoware nlohmann::json llama common ggml ggml-base llguidance Threads::Threads) # ggml-cpu 
 else()
-    target_link_libraries(llamacpp_ngin PRIVATE cpuinfo infoware nlohmann::json llama common ggml ggml-base llguidance Threads::Threads) # ggml-cpu 
+    target_link_libraries(lcpp_ngin PRIVATE cpuinfo infoware nlohmann::json llama common ggml ggml-base llguidance Threads::Threads) # ggml-cpu 
 endif()
 
 if (ANDROID)
   # Support Android 15 16k page size.
-  target_link_options(llamacpp_ngin PRIVATE "-Wl,-z,max-page-size=16384")
+  target_link_options(lcpp_ngin PRIVATE "-Wl,-z,max-page-size=16384")
 endif()

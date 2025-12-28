@@ -1,4 +1,4 @@
-part of 'package:llamacpp_ngin/llamacpp_ngin.dart';
+part of 'package:lcpp_ngin/lcpp_ngin.dart';
 
 Pointer<Pointer<lcpp_common_chat_tool_t>> listOfToolsToNative(
   List<Tool> tools,

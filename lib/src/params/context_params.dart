@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 // ignore_for_file: constant_identifier_names
-part of 'package:llamacpp_ngin/llamacpp_ngin.dart';
+part of 'package:lcpp_ngin/lcpp_ngin.dart';
 
 /// A class representing the parameters for context configuration.
 class ContextParams with ChangeNotifier {

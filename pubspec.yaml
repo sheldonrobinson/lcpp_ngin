@@ -1,5 +1,5 @@
-name: llamacpp_ngin
-description: "LlamaC++  is a dart implementation of llama.cpp. It is a revision of lcpp from mobile artificial intelligence distribution (maid)."
+name: lcpp_ngin
+description: "LlamaC++ Engin is a dart implementation of llama.cpp. It is a revision of lcpp from mobile artificial intelligence distribution (maid)."
 version: 1.1.0
 homepage: "https://github.com/sheldonrobinson/llamacpp"
 

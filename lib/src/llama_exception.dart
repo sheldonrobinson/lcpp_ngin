@@ -1,4 +1,4 @@
-part of 'package:llamacpp_ngin/llamacpp_ngin.dart';
+part of 'package:lcpp_ngin/lcpp_ngin.dart';
 
 /// A custom exception class for handling errors specific to the Llama application.
 ///

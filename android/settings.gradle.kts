@@ -1,1 +1,1 @@
-rootProject.name = "llamacpp_ngin"
+rootProject.name = "lcpp_ngin"
