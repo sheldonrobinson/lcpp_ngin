@@ -1,10 +1,5 @@
 # LlamaCpp
 
-[![Build Android](https://github.com/sheldonrobinson/llamacpp/actions/workflows/build-android.yml/badge.svg)](https://github.com/sheldonrobinson/llamacpp/actions/workflows/build-android.yml)
-[![Build Linux](https://github.com/sheldonrobinson/llamacpp/actions/workflows/build-linux.yml/badge.svg)](https://github.com/sheldonrobinson/llamacpp/actions/workflows/build-linux.yml)
-[![Build MacOS](https://github.com/sheldonrobinson/llamacpp/actions/workflows/build-macos.yml/badge.svg)](https://github.com/sheldonrobinson/llamacpp/actions/workflows/build-macos.yml)
-[![Build Windows](https://github.com/sheldonrobinson/llamacpp/actions/workflows/build-windows.yml/badge.svg)](https://github.com/sheldonrobinson/llamacpp/actions/workflows/build-windows.yml)
-
 LlamaCpp is a dart implementation of llama.cpp. It is a fork/revision of lcpp from mobile artificial intelligence distribution (maid)
 
 ## Features
@@ -12,17 +7,17 @@ LlamaCpp is a dart implementation of llama.cpp. It is a fork/revision of lcpp fr
 
 ## Getting started
 
-To use this package, add `llamacpp` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+To use this package, add `llamacpp_ngin` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ```yaml
 dependencies:
-  llamacpp: ^1.0.0
+  llamacpp_ngin: ^1.0.0
 ```
 
 then you can import llama in your Dart code
 
 ```dart
-import 'package:llamacpp/llamacpp.dart';
+import 'package:llamacpp_ngin/llamacpp_ngin.dart';
 ```
 
 ## Usage
