@@ -1,4 +1,4 @@
-# llamacpp_example
+# lcpp_ngin_example
 
 Demonstrates how to use the llamacpp plugin.
 

@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "llamacpp_example" "\0"
+            VALUE "FileDescription", "lcpp_ngin_example" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "llamacpp_example" "\0"
+            VALUE "InternalName", "lcpp_ngin_example" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "llamacpp_example.exe" "\0"
-            VALUE "ProductName", "llamacpp_example" "\0"
+            VALUE "OriginalFilename", "lcpp_ngin_example.exe" "\0"
+            VALUE "ProductName", "lcpp_ngin_example" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -7,17 +7,17 @@ LlamaCpp is a dart implementation of llama.cpp. It is a fork/revision of lcpp fr
 
 ## Getting started
 
-To use this package, add `llamacpp_ngin` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+To use this package, add `lcpp_ngin` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ```yaml
 dependencies:
-  llamacpp_ngin: ^1.0.0
+  lcpp_ngin: ^1.0.0
 ```
 
 then you can import llama in your Dart code
 
 ```dart
-import 'package:llamacpp_ngin/llamacpp_ngin.dart';
+import 'package:lcpp_ngin/lcpp_ngin.dart';
 ```
 
 ## Usage

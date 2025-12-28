@@ -1,4 +1,4 @@
-package com.example.llamacpp_example
+package com.example.lcpp_ngin_example
 
 import io.flutter.embedding.android.FlutterActivity
 
