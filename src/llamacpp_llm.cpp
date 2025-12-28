@@ -34,18 +34,17 @@ typedef struct common_params common_params_t;
 
 typedef struct common_chat_params common_chat_params_t;
 
-// typedef struct ggml_threadpool ggml_threadpool_t;
 typedef struct ggml_threadpool_params ggml_threadpool_params_t;
 
 typedef struct common_params_sampling common_params_sampling_t;
 
 typedef struct common_chat_templates common_chat_templates_t;
-typedef struct common_sampler common_sampler_t;
 typedef struct common_chat_syntax common_chat_syntax_t;
 typedef struct common_chat_tool common_chat_tool_t;
 typedef struct common_chat_templates_inputs common_chat_templates_inputs_t;
 
 typedef struct common_init_result common_init_result_t;
+typedef struct common_sampler common_sampler_t;
 
 typedef struct common_chat_msg common_chat_msg_t;
 typedef struct common_chat_tool_call common_chat_tool_call_t;
@@ -82,43 +81,7 @@ static LppChatMessageCallback ChatMessageCallback = nullptr;
 
 static common_chat_templates_ptr _chat_templates;
 
-//typedef struct common_init_result_deleter {
-//	void operator()(common_init_result_t* cmResult) {
-//		if (cmResult != nullptr) {
-//			if (cmResult->context() != nullptr) {
-//				llama_free(cmResult->context());
-//				cmResult->free_context();
-//			}
-//			if (cmResult->model() != nullptr) {
-//				llama_model_free(cmResult->model());
-//			}
-//			auto lora_vector = (*cmResult).lora();
-//			for(llama_adapter_lora_ptr& lora_ptr : lora_vector) {
-//				if (lora_ptr != nullptr) {
-//					lora_ptr.reset();
-//				}
-//			}
-//			lora_vector.clear();
-//			free(cmResult);
-//		}
-//	}
-//} common_init_result_deleter_t;
-
-// typedef std::unique_ptr < common_init_result_t, common_init_result_deleter_t> common_init_result_ptr;
-
 static common_init_result_ptr _common;
-
-//typedef struct common_sampler_deleter {
-//	void operator()(common_sampler_t* gsmpl) {
-//		if (gsmpl != nullptr) {
-//			// reset internal pointers to avoid double free
-//			common_sampler_free(gsmpl);
-//		}
-//		
-//	}
-//} common_sampler_deleter_t;
-
-// typedef std::unique_ptr<common_sampler_t, common_sampler_deleter_t> common_sampler_ptr;
 
 void lcpp_free_common_chat_msg(lcpp_common_chat_msg_t* msg) {
 	if (msg != nullptr) {
@@ -450,168 +413,6 @@ void lcpp_set_on_abort_callback(LcppOnAbortCallback on_abort_callback) {
 void lcpp_unset_on_abort_callback() {
 	OnAbortCallback = nullptr;
 }
-
-/*
-static common_chat_syntax_ptr chat_syntax_for_model_family(lcpp_model_family_t model_family, bool is_reasoning) {
-	common_chat_syntax_ptr _syntax(new common_chat_syntax());
-
-	switch (model_family) {
-	case LCPP_MODEL_FAMILY_DEEPSEEK:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_DEEPSEEK_V3_1;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_DEEPSEEK;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_QWEN:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_DEEPSEEK_V3_1;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_DEEPSEEK;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_GRANITE:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_GRANITE;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_DEEPSEEK;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_LLAMA:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_LLAMA_3_X_WITH_BUILTIN_TOOLS;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_AUTO;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_MISTRAL:
-	{
-		(*_syntax).format = is_reasoning ? COMMON_CHAT_FORMAT_MAGISTRAL : COMMON_CHAT_FORMAT_MISTRAL_NEMO;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_AUTO;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_PHI:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_GENERIC;
-		(*_syntax).reasoning_format = is_reasoning ? COMMON_REASONING_FORMAT_DEEPSEEK : COMMON_REASONING_FORMAT_NONE;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_GEMMA:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_GENERIC;
-		(*_syntax).reasoning_format = is_reasoning ? COMMON_REASONING_FORMAT_AUTO : COMMON_REASONING_FORMAT_NONE;
-		(*_syntax).parse_tool_calls = false;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_GPT_OSS:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_GPT_OSS;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_AUTO;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_SEED_OSS:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_SEED_OSS;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_DEEPSEEK;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_APERTUS:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_APERTUS;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_DEEPSEEK;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_NEMOTRON:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_NEMOTRON_V2;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_DEEPSEEK;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_LIQUID:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_LFM2_WITH_JSON_TOOLS;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_NONE;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_GLM:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_GLM_4_5;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_DEEPSEEK;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_MINIMAX:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_MINIMAX_M2;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_DEEPSEEK;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_COHERE:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_COMMAND_R7B;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_DEEPSEEK;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	case LCPP_MODEL_FAMILY_GENERIC:
-	{
-		(*_syntax).format = is_reasoning ? COMMON_CHAT_FORMAT_GENERIC : COMMON_CHAT_FORMAT_CONTENT_ONLY;
-		(*_syntax).reasoning_format = is_reasoning ? COMMON_REASONING_FORMAT_AUTO : COMMON_REASONING_FORMAT_NONE;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	default:
-	{
-		(*_syntax).format = COMMON_CHAT_FORMAT_CONTENT_ONLY;
-		(*_syntax).reasoning_format = COMMON_REASONING_FORMAT_AUTO;
-		(*_syntax).parse_tool_calls = true;
-		(*_syntax).reasoning_in_content = false;
-		(*_syntax).thinking_forced_open = false;
-	}
-	break;
-	}
-	return _syntax;
-} */
 
 lcpp_common_chat_msg_t* _to_lcpp_common_chat_msg(std::string& response, bool is_partial, common_chat_syntax_t syntax) {
 
@@ -1104,7 +905,6 @@ void lcpp_unload() {
 	}
 
 	_chat_templates.reset();
-	// _chat_syntax.reset();
 	_common.reset();
 	bLLAMACPP_loaded = false;
 
