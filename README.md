@@ -1,6 +1,6 @@
-# LlamaCpp
+# lcpp_ngin
 
-LlamaCpp is a dart implementation of llama.cpp. It is a fork/revision of lcpp from mobile artificial intelligence distribution (maid)
+lcpp_ngin is a dart implementation of llama.cpp. It is a fork/revision of lcpp from mobile artificial intelligence distribution (maid)
 
 ## Features
 - Streaming support
@@ -11,7 +11,7 @@ To use this package, add `lcpp_ngin` as a [dependency in your pubspec.yaml file]
 
 ```yaml
 dependencies:
-  lcpp_ngin: ^1.0.0
+  lcpp_ngin: ^1.0.1
 ```
 
 then you can import llama in your Dart code

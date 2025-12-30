@@ -262,7 +262,7 @@ extension _FreeLlamaCppChatMessagesExtension
 ///
 /// 1. Reuse a single isolate for various different kinds of requests.
 /// 2. Use multiple helper isolates for parallel execution.
-const String _libName = 'llamacpp_ngin';
+const String _libName = 'lcpp_ngin';
 
 /// The dynamic library in which the symbols for [UnnuCognitiveEnvironmentBindings] can be found.
 final DynamicLibrary _dylib = () {

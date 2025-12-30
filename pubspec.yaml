@@ -1,6 +1,6 @@
 name: lcpp_ngin
 description: "LlamaC++ Engin is a dart implementation of llama.cpp. It is a revision of lcpp from mobile artificial intelligence distribution (maid)."
-version: 1.0.0
+version: 1.0.1
 homepage: "https://github.com/sheldonrobinson/lcpp_ngin"
 
 topics:
